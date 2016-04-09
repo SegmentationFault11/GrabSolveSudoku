@@ -19,7 +19,7 @@ void findCell(Mat &sudoku, Mat &cells, Mat &nums) {
     Mat kernel1 = (Mat_<uchar>(3,3) << 0,1,0,1,1,1,0,1,0);
     Mat kernel2 = (Mat_<uchar>(5,5) << 0,0,1,0,0, 0,1,1,1,0, 1,1,1,1,1, 0,1,1,1,0, 0,0,1,0,0);
     Point maxPt = paintBorder(cells);
-    imshow("temp", nums);
+    //imshow("temp", nums);
     
     floodFill(cells, Point(0,0), CV_RGB(255,255,255));
     floodFill(cells, maxPt, CV_RGB(255,255,255));

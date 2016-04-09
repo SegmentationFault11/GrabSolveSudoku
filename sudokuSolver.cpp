@@ -50,7 +50,7 @@ inline bool isSafe(int grid[N][N], int row, int col, int num) {
     return !inRow(grid, row, num) && !inCol(grid, col, num) && !inBox(grid, row - row%3, col - col%3, num);
 }
 
-inline void printGrid(int grid[N][N]) {
+void printGrid(int grid[N][N]) {
     for (int row = 0; row < N; ++row) {
         for (int col = 0; col < N; ++col) 
             cout << grid[row][col] << " ";

@@ -35,11 +35,11 @@ void name_cell(Mat &cells, vector<Rect> &cell_list, int &cell_size) {
         if (num_found == 81) break;
     }
     
-    cout << "cell_size_l = " << cell_size << endl;
+    //cout << "cell_size_l = " << cell_size << endl;
     
     cell_size /= num_found;
     
-    cout << "cell_size_s = " << cell_size << endl;
+    //cout << "cell_size_s = " << cell_size << endl;
     
     sort(cell_list.begin(), cell_list.end(), compRecty);
     
@@ -57,7 +57,7 @@ void match_num(Mat &nums, vector<int> &board, vector<Rect> &cell_list, int cell_
     unsigned upper_area = (cell_size*0.6);
     unsigned lower_area = (cell_size*0.1);
     
-    cout << "what = " << (cell_size*0.7) << endl;
+    //cout << "what = " << (cell_size*0.7) << endl;
     
     unsigned num_found = 0;
     unsigned curr_area = 0;
@@ -83,7 +83,7 @@ void match_num(Mat &nums, vector<int> &board, vector<Rect> &cell_list, int cell_
                 curr_area = curr_dim.height*curr_dim.width;
                 curr_ratio = (double)curr_dim.height/(double)curr_dim.width;
                 
-                cout << "area = " << curr_area << " up = " << upper_area << " la = " << lower_area << " ratio = " << curr_ratio << endl;
+                //cout << "area = " << curr_area << " up = " << upper_area << " la = " << lower_area << " ratio = " << curr_ratio << endl;
                 
                 if (curr_area < upper_area && curr_area > lower_area && curr_ratio < 3 && curr_ratio > 1.1) {
                     curr_center.x = curr_dim.x + curr_dim.width/2;

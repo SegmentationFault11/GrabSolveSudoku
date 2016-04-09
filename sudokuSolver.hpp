@@ -19,6 +19,8 @@
 
 using namespace std;
 
+bool solve(int grid[N][N]);
+
 inline bool findUnassigned(int grid[N][N], int &row, int &col);
 
 inline bool isSafe(int grid[N][N], int row, int col, int num);
@@ -31,6 +33,6 @@ inline bool inBox(int grid[N][N], int boxStartRow, int boxStartCol, int num);
 
 inline bool isSafe(int grid[N][N], int row, int col, int num);
 
-inline void printGrid(int grid[N][N]);
+void printGrid(int grid[N][N]);
 
 #endif /* sudokuSolver_h */
