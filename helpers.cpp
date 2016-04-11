@@ -289,8 +289,14 @@ void findCell(Mat &sudoku, Mat &cells, Mat &nums) {
     Mat sudoku_blur;
     GaussianBlur(sudoku, sudoku_blur, Size(7,7), 0);
     
+    //imshow("s",sudoku);
+    
     adaptiveThreshold(sudoku_blur, nums, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY, 5, 2);
-    adaptiveThreshold(sudoku, cells, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY_INV, 15, 2);
+    //threshold(sudoku, cells, 200, 255, THRESH_BINARY);
+    adaptiveThreshold(sudoku, cells, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY_INV, 11, 2);
+    
+    //imshow("b",cells);
+    //cvWaitKey();
     
     Mat kernel1 = (Mat_<uchar>(3,3) << 0,1,0,1,1,1,0,1,0);
     Mat kernel2 = (Mat_<uchar>(5,5) << 0,0,1,0,0, 0,1,1,1,0, 1,1,1,1,1, 0,1,1,1,0, 0,0,1,0,0);
@@ -357,20 +363,16 @@ void paintBlack(Mat inputMat, int color){
     }
 }
 
-Mat adjSize (Mat &input, int std_sz) {
-    Mat rst;
-    
+void adjSize (Mat &input, Mat &rst, int std_sz) {
     double im_area =  input.size().height * input.size().width;
     
-    if (im_area > std_sz) return input;
+    if (im_area > std_sz) return;
     
     double sz_ratio = sqrt(std_sz/im_area);
     
-    Size new_sz(input.size().height*sz_ratio, input.size().width*sz_ratio);
+    Size new_sz(input.size().width*sz_ratio, input.size().height*sz_ratio);
     
-    resize(input, rst, new_sz);
-    
-    return rst;
+    resize(input, rst, new_sz, INTER_NEAREST);
 }
 
 void name_cell(Mat &cells, vector<Rect> &cell_list, int &cell_size) {
@@ -408,6 +410,7 @@ void name_cell(Mat &cells, vector<Rect> &cell_list, int &cell_size) {
         if (num_found == 81) break;
     }
     
+    if (num_found < 81) cout << "now what?" << endl;
     cell_size /= num_found;
     
     sort(cell_list.begin(), cell_list.end(), compRecty);
@@ -510,7 +513,7 @@ int dim_floodFill(Mat &im, Point pt, uchar color, Rect &dim, int max_height, int
                 if (xval < left) left = xval;
             }
         }
-        if (pt.x < max_width) {
+        if (pt.x < max_width-1) {
             xval = curr_point.x+1;
             yval = curr_point.y;
             pixel = &im.at<uchar>(Point(xval, yval));
@@ -532,7 +535,7 @@ int dim_floodFill(Mat &im, Point pt, uchar color, Rect &dim, int max_height, int
                 if (yval < top) top = yval;
             }
         }
-        if (pt.y < max_height) {
+        if (pt.y < max_height-1) {
             xval = curr_point.x;
             yval = curr_point.y+1;
             pixel = &im.at<uchar>(Point(xval, yval));
@@ -545,7 +548,6 @@ int dim_floodFill(Mat &im, Point pt, uchar color, Rect &dim, int max_height, int
         }
     }
     
-    if (left == 0) cout << "what" << endl;
     dim.x = left;
     dim.y = top;
     dim.height = bot - top;
@@ -553,6 +555,10 @@ int dim_floodFill(Mat &im, Point pt, uchar color, Rect &dim, int max_height, int
     
     return area;
 }
+
+//void tessPreprocess(Mat &in, Mat &out) {
+//    int std_height =
+//}
 
 bool compRecty(Rect i, Rect j) {return i.y < j.y;}
 

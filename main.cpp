@@ -8,23 +8,27 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include <string>
 
 #include "helpers.hpp"
+#include "sudokuSolver.hpp"
 
 using namespace cv;
 using namespace xphoto;
 
 int main(int argc, const char * argv[]) {
-    const double min_area = 16000.0;
+    const double min_area = 550000.0;
     
     //Load image
-    Mat sudoku = imread("/Users/stevenma/Desktop/EECS 442/testCV2/testCV2/sudoku.jpg", 1);
+    Mat sudoku = imread("/Users/stevenma/Desktop/sudokupuzzles/sudoku1.png", 1);
     cvtColor(sudoku, sudoku, CV_BGR2GRAY);
     
-    sudoku = adjSize(sudoku, min_area);
     
+
     sudoku = straighten(sudoku);
     
+    adjSize(sudoku, sudoku, min_area);
+
     Mat cells, nums;
     findCell(sudoku, cells, nums);
     
@@ -39,40 +43,59 @@ int main(int argc, const char * argv[]) {
     vector<int> board;
     board.resize(81);
     match_num(nums, board, cell_list, cell_size, board_im);
+    //imshow("nums", nums);
+    //imshow("cells", cells); cvWaitKey();
     
-    for (int i = 0; i < 81; ++i) {
-        if (i%9 == 0) cout << endl;
-        cout << board[i] << " ";
-    }
-    cout << endl;
     
+//    Mat curr;
+//    int num = 82;
 //    for (int i = 0; i < 81; ++i) {
-//        if (board[i]) imshow(to_string(i), board_im[i]);
+//        if (board_im[i].data)  {
+//            imshow(to_string(i), board_im[i]);
+//            string name = "/Users/stevenma/Desktop/sdk/sdk.font1.exp" + to_string(num++) + ".tif";
+//            //board_im[i].convertTo(curr, CV_8U);
+//            resize(board_im[i], board_im[i], Size(5*board_im[i].size().width,5*board_im[i].size().height), INTER_NEAREST);
+//            //bitwise_not(board_im[i], board_im[i]);
+//            threshold(board_im[i], board_im[i], 0, 255, THRESH_BINARY);
+//            if (imwrite(name, board_im[i])) {
+//                cout << name << " write success" << endl;
+//            }
+//            else {
+//                cout << name << " write fail" << endl;
+//            }
+//        }
 //    }
     
     
-    //imshow("part", board_im[6]);
+//    imshow("part", board_im[3]);
     
-    imshow("nums", nums);
-    imshow("cells:", cells);
-  
-//    int grid[N][N] =
-//       {{3,0,6,5,0,8,4,0,0},
-//        {5,2,0,0,0,0,0,0,0},
-//        {0,8,7,0,0,0,0,3,1},
-//        {0,0,3,0,1,0,0,8,0},
-//        {9,0,0,8,6,3,0,0,5},
-//        {0,5,0,0,9,0,6,0,0},
-//        {1,3,0,0,0,0,2,5,0},
-//        {0,0,0,0,0,0,0,7,4},
-//        {0,0,5,2,0,6,3,0,0}};
+//    imshow("nums", nums);
+//    imshow("cells:", cells);
 //    
-//    if (solve(grid))
-//        printGrid(grid);
-//    else
-//        cout << "No!" << endl;
+    int grid[9][9] = {{0}};
+    tesseract::TessBaseAPI *myOCR = new tesseract::TessBaseAPI();
     
+    myOCR->Init(NULL, "sdk");
     
+    myOCR->SetVariable("tessedit_char_whitelist","123456789");
+    myOCR->SetPageSegMode(tesseract::PSM_SINGLE_CHAR);
+    
+    for (int i = 0; i < 81; ++i) {
+        if (board_im[i].data)  {
+            
+            //imshow(to_string(i), board_im[i]);
+            myOCR->SetImage((uchar*)board_im[i].data, board_im[i].size().width, board_im[i].size().height, board_im[i].channels(), (int)board_im[i].step1());
+            
+            grid[i/9][i%9] = atoi(myOCR->GetUTF8Text());
+        }
+    }
+    
+    printGrid(grid);
+    cout << "\n\n\n" << endl;
+    if (solve(grid))
+        printGrid(grid);
+    else
+        cout << "No!" << endl;
     
     cvWaitKey();
     return 0;
