@@ -47,24 +47,25 @@ int main(int argc, const char * argv[]) {
     //imshow("cells", cells); cvWaitKey();
     
     
-//    Mat curr;
-//    int num = 82;
-//    for (int i = 0; i < 81; ++i) {
-//        if (board_im[i].data)  {
-//            imshow(to_string(i), board_im[i]);
-//            string name = "/Users/stevenma/Desktop/sdk/sdk.font1.exp" + to_string(num++) + ".tif";
-//            //board_im[i].convertTo(curr, CV_8U);
-//            resize(board_im[i], board_im[i], Size(5*board_im[i].size().width,5*board_im[i].size().height), INTER_NEAREST);
-//            //bitwise_not(board_im[i], board_im[i]);
-//            threshold(board_im[i], board_im[i], 0, 255, THRESH_BINARY);
+    Mat curr;
+    int num = 82;
+    for (int i = 0; i < 81; ++i) {
+        if (board_im[i].data)  {
+            string name = "/Users/stevenma/Desktop/sdk/sdk.font1.exp" + to_string(num++) + ".tif";
+            //board_im[i].convertTo(curr, CV_8U);
+            resize(board_im[i], board_im[i], Size(5*board_im[i].size().width,5*board_im[i].size().height), INTER_NEAREST);
+            //bitwise_not(board_im[i], board_im[i]);
+            adaptiveThreshold(board_im[i], board_im[i], <#double maxValue#>, <#int adaptiveMethod#>, <#int thresholdType#>, <#int blockSize#>, <#double C#>)
+            //threshold(board_im[i], board_im[i], 0, 255, THRESH_BINARY);
+            imshow(to_string(i), board_im[i]);
 //            if (imwrite(name, board_im[i])) {
 //                cout << name << " write success" << endl;
 //            }
 //            else {
 //                cout << name << " write fail" << endl;
 //            }
-//        }
-//    }
+        }
+    }
     
     
 //    imshow("part", board_im[3]);
