@@ -287,36 +287,32 @@ void mergeRelatedLines(vector<Vec2f> *lines, Mat &img) {
 
 void findCell(Mat &sudoku, Mat &cells, Mat &nums) {
     Mat sudoku_blur;
-    GaussianBlur(sudoku, sudoku_blur, Size(7,7), 0);
+    GaussianBlur(sudoku, sudoku_blur, Size(5,5), 2);
+    //medianBlur(sudoku, sudoku_blur, 5);
+//    bilateralFilter(sudoku, sudoku_blur, 19, 2, 19);
     
-    //imshow("s",sudoku);
+    imshow ("sudoku", sudoku_blur);
     
-    adaptiveThreshold(sudoku_blur, nums, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY, 5, 2);
-    //threshold(sudoku, cells, 200, 255, THRESH_BINARY);
-    adaptiveThreshold(sudoku, cells, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY_INV, 11, 2);
+    adaptiveThreshold(sudoku_blur, nums, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY, 11, 2);
+    adaptiveThreshold(sudoku, cells, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY_INV, 23, 2);
     
-    //imshow("b",cells);
-    //cvWaitKey();
+    imshow("nums", nums);
     
     Mat kernel1 = (Mat_<uchar>(3,3) << 0,1,0,1,1,1,0,1,0);
     Mat kernel2 = (Mat_<uchar>(5,5) << 0,0,1,0,0, 0,1,1,1,0, 1,1,1,1,1, 0,1,1,1,0, 0,0,1,0,0);
     Point maxPt = paintBorder(cells);
-    //imshow("temp", nums);
     
-    floodFill(cells, Point(0,0), CV_RGB(255,255,255));
     floodFill(cells, maxPt, CV_RGB(255,255,255));
     floodFill(nums, maxPt, CV_RGB(255,255,255));
-    
+
     paintBlack(cells, 64);
     paintBlack(nums, 64);
+    floodFill(cells, Point(2,2), CV_RGB(255,255,255));
     
-    dilate(cells, cells, kernel2);
-    
-    GaussianBlur(cells, cells, Size(5,5), 0);
-    threshold(cells, cells, 50, 255, THRESH_BINARY_INV);
     dilate(cells, cells, kernel2);
     
     bitwise_not(nums, nums);
+    bitwise_not(cells, cells);
     
     bitwise_and(nums, cells, nums);
     
@@ -325,7 +321,7 @@ void findCell(Mat &sudoku, Mat &cells, Mat &nums) {
     GaussianBlur(nums, nums, Size(7,7), 0);
     bitwise_not(nums, nums);
     bitwise_not(cells, cells);
-    threshold(nums, nums, 75, 127, THRESH_BINARY_INV);
+    threshold(nums, nums, 50, 127, THRESH_BINARY_INV);
 }
 
 Point paintBorder(Mat inputMat){
@@ -372,14 +368,14 @@ void adjSize (Mat &input, Mat &rst, int std_sz) {
     
     Size new_sz(input.size().width*sz_ratio, input.size().height*sz_ratio);
     
-    resize(input, rst, new_sz, INTER_NEAREST);
+    resize(input, rst, new_sz, INTER_CUBIC);
 }
 
 void name_cell(Mat &cells, vector<Rect> &cell_list, int &cell_size) {
     unsigned height = cells.size().height;
     unsigned width = cells.size().width;
     unsigned upper_area = (height*width*0.9)/81;
-    unsigned lower_area = (height*width*0.55)/81;
+    unsigned lower_area = (height*width*0.50)/81;
     
     unsigned num_found = 0;
     unsigned curr_area = 0;
@@ -419,11 +415,7 @@ void name_cell(Mat &cells, vector<Rect> &cell_list, int &cell_size) {
         sort(cell_list.begin() + i, cell_list.begin() + i + 9, compRectx);
 }
 
-void match_num(Mat &nums, vector<int> &board, vector<Rect> &cell_list, int cell_size, vector<Mat> &board_im) {
-    for (int i = 0; i < 81; ++i) {
-        board[i] = 0;
-    }
-    
+void match_num(Mat &nums, vector<Rect> &cell_list, int cell_size, vector<Mat> &board_im) {
     unsigned height = nums.size().height;
     unsigned width = nums.size().width;
     unsigned upper_area = (cell_size*0.6);
@@ -433,13 +425,6 @@ void match_num(Mat &nums, vector<int> &board, vector<Rect> &cell_list, int cell_
     unsigned curr_area = 0;
     double curr_ratio = 0;
     bool found = false;
-    
-    for (int i = 0; i < 81; ++i) {
-        circle(nums, Point(cell_list[i].x, cell_list[i].y), 3, 0, -1);
-        circle(nums, Point(cell_list[i].x + cell_list[i].width, cell_list[i].y), 3, 0, -1);
-        circle(nums, Point(cell_list[i].x, cell_list[i].y + cell_list[i].height), 3, 0, -1);
-        circle(nums, Point(cell_list[i].x + cell_list[i].width, cell_list[i].y + cell_list[i].height), 3, 0, -1);
-    }
     
     Rect curr_dim;
     Point curr_center;
@@ -451,7 +436,7 @@ void match_num(Mat &nums, vector<int> &board, vector<Rect> &cell_list, int cell_
             if (static_cast<int>(p[j]) == 127) {
                 
                 dim_floodFill(nums, Point(j,i), 255, curr_dim, height, width);
-                
+
                 curr_area = curr_dim.height*curr_dim.width;
                 curr_ratio = (double)curr_dim.height/(double)curr_dim.width;
                 
@@ -468,7 +453,6 @@ void match_num(Mat &nums, vector<int> &board, vector<Rect> &cell_list, int cell_
                             (curr_center.y > curr_cell.y)) {
                             curr_im = nums(curr_dim);
                             board_im[k] = nums(curr_dim);
-                            board[k] = 0;
                             found = true;
                         }
                     }
