@@ -291,12 +291,8 @@ void findCell(Mat &sudoku, Mat &cells, Mat &nums) {
     //medianBlur(sudoku, sudoku_blur, 5);
 //    bilateralFilter(sudoku, sudoku_blur, 19, 2, 19);
     
-    imshow ("sudoku", sudoku_blur);
-    
     adaptiveThreshold(sudoku_blur, nums, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY, 11, 2);
     adaptiveThreshold(sudoku, cells, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY_INV, 23, 2);
-    
-    imshow("nums", nums);
     
     Mat kernel1 = (Mat_<uchar>(3,3) << 0,1,0,1,1,1,0,1,0);
     Mat kernel2 = (Mat_<uchar>(5,5) << 0,0,1,0,0, 0,1,1,1,0, 1,1,1,1,1, 0,1,1,1,0, 0,0,1,0,0);
@@ -317,6 +313,9 @@ void findCell(Mat &sudoku, Mat &cells, Mat &nums) {
     bitwise_and(nums, cells, nums);
     
     dilate(nums, nums, kernel1);
+    
+    //imshow("nums", nums);
+    //imshow("cell", cells);
     
     GaussianBlur(nums, nums, Size(7,7), 0);
     bitwise_not(nums, nums);
