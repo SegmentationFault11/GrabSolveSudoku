@@ -288,8 +288,6 @@ void mergeRelatedLines(vector<Vec2f> *lines, Mat &img) {
 void findCell(Mat &sudoku, Mat &cells, Mat &nums) {
     Mat sudoku_blur;
     GaussianBlur(sudoku, sudoku_blur, Size(5,5), 2);
-    //medianBlur(sudoku, sudoku_blur, 5);
-//    bilateralFilter(sudoku, sudoku_blur, 19, 2, 19);
     
     adaptiveThreshold(sudoku_blur, nums, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY, 11, 2);
     adaptiveThreshold(sudoku, cells, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY_INV, 23, 2);
@@ -313,9 +311,6 @@ void findCell(Mat &sudoku, Mat &cells, Mat &nums) {
     bitwise_and(nums, cells, nums);
     
     dilate(nums, nums, kernel1);
-    
-    //imshow("nums", nums);
-    //imshow("cell", cells);
     
     GaussianBlur(nums, nums, Size(7,7), 0);
     bitwise_not(nums, nums);
@@ -404,6 +399,8 @@ void name_cell(Mat &cells, vector<Rect> &cell_list, int &cell_size) {
         }
         if (num_found == 81) break;
     }
+    
+    imshow("fas", cells);
     
     if (num_found < 81) cout << "now what?" << endl;
     cell_size /= num_found;
@@ -496,7 +493,7 @@ int dim_floodFill(Mat &im, Point pt, uchar color, Rect &dim, int max_height, int
                 if (xval < left) left = xval;
             }
         }
-        if (pt.x < max_width-1) {
+        if (pt.x < max_width-2) {
             xval = curr_point.x+1;
             yval = curr_point.y;
             pixel = &im.at<uchar>(Point(xval, yval));
@@ -518,7 +515,7 @@ int dim_floodFill(Mat &im, Point pt, uchar color, Rect &dim, int max_height, int
                 if (yval < top) top = yval;
             }
         }
-        if (pt.y < max_height-1) {
+        if (pt.y < max_height-2) {
             xval = curr_point.x;
             yval = curr_point.y+1;
             pixel = &im.at<uchar>(Point(xval, yval));

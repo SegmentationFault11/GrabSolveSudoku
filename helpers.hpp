@@ -5,9 +5,6 @@
 #include <opencv2/xphoto.hpp>
 #include <opencv2/xphoto/white_balance.hpp>
 
-#include <tesseract/baseapi.h>
-#include <tesseract/strngs.h>
-
 #include <iostream>
 #include <vector>
 #include <stack>
